@@ -1,0 +1,18 @@
+/*Task 2. Write a program that reads the radius r of a circle and prints its perimeter and area.*/
+
+
+using System;
+class CircleRadius
+{
+    static void Main()
+    {
+        Console.Title = "CircleRadius";
+
+        Console.WriteLine("Enter hippotetic Radius: ");
+        double radius = double.Parse(Console.ReadLine());
+
+        Console.WriteLine(new string('-',25));
+        Console.WriteLine("The perimeter is: {0}\n",2 * Math.PI*radius);/* formulla: 2*PI*r */
+        Console.WriteLine("The Area is: {0}\n", Math.PI*radius*radius);/* formulla: PI*r*r */
+    }
+}
