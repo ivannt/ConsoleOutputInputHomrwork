@@ -1,0 +1,29 @@
+/*Task 4. Write a program that reads two positive integer numbers and prints how many 
+numbers p exist between them such that the reminder of the division by 5 is 0 (inclusive).*/
+
+
+using System;
+class BetweenTwoPositiveInteger
+{
+    static void Main()
+    {
+        Console.Title = "BetweenTwoPositiveInteger";
+
+        Console.WriteLine("Enter first Integer number: ");
+        int firstNum = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter second Integer number: ");
+        int secondNum = int.Parse(Console.ReadLine());
+
+        int pNum = 0;
+        for (int i = firstNum; i <= secondNum; i++)
+        {
+            if (i % 5 == 0)/*the reminder of the division by 5 is 0*/
+            {
+                pNum++;
+            }
+        }
+        Console.WriteLine(new string('-', 33));
+        Console.WriteLine("There are {0} numbers between {1} and {2}", pNum, firstNum, secondNum);
+    }
+}
