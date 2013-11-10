@@ -1,0 +1,46 @@
+/*Task 3. A company has name, address, phone number, fax number, web site and manager. 
+ * The manager has first name, last name, age and a phone number. Write a program 
+ * that reads the information about a company and its manager and prints them on the console.*/
+
+
+using System;
+class ManagerLegacy
+{
+    static void Main()
+    {
+        Console.Title = "ManagerLegacy";
+
+        Console.WriteLine("Enter Company's Name:");
+        string compName = Console.ReadLine();
+
+        Console.WriteLine("Enter Address:");
+        string compAddress = Console.ReadLine();
+
+        Console.WriteLine("Enter Phone number:");
+        int compPhone = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter Fax number:");
+        int compFax = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter Web Site:");
+        string compWebSite = Console.ReadLine();
+
+        Console.WriteLine(new string('-',33));
+        Console.WriteLine("Enter Manager's First Name:");
+        string manFName = Console.ReadLine();
+
+        Console.WriteLine("Enter Last Name:");
+        string manLName = Console.ReadLine();
+
+        Console.WriteLine("Enter Age:");
+        byte manAge = byte.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter Phone number:");
+        int manPhone = int.Parse(Console.ReadLine());
+
+        Console.WriteLine(new string('-',33));
+        Console.WriteLine("{0}\nLocation: \n{1}\nContact`s:\nPhone Number\n{2}\nFax Number\n{3}\nWebsite\n{4}\n"
+            , compName, compAddress, compPhone, compFax, compWebSite);
+        Console.WriteLine("Manager info:\n{0} {1}\n{2} years old\nPhone Number\n{3}", manFName, manLName, manAge, manPhone);
+    }
+}
