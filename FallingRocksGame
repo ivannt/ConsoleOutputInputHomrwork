@@ -1,0 +1,362 @@
+/*Falling Rocks Console GameC#
+ Implement the "Falling Rocks" game in the text console. A small dwarf stays at the bottom of the
+ screen and can move left and right (by the arrows keys). A number of rocks of different sizes and
+ forms constantly fall down and you need to avoid a crash.
+ Rocks are the symbols ^, @, *, &, +, %, $, #, !, ., ;, - distributed with appropriate density.
+ The dwarf is (O). Ensure a constant game speed by Thread.Sleep(150).
+ Implement collision detection and scoring system.*/
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.IO;
+class FallingRocks
+{
+    struct Rock
+    {
+        public int x;
+        public int y;
+        public char c;
+        public ConsoleColor color;
+    }// set a parameters
+
+    static void ConsoleInitialSettings()
+    {
+        Console.BufferHeight = Console.WindowHeight = 30;
+        Console.BufferWidth = Console.WindowWidth = 50;
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.Title = "Falling Rocks";
+        Console.CursorVisible = false;
+    } // set the initial setting of the console such as title size
+
+    static void PrintOnPosition(int x, int y, char c, ConsoleColor color = ConsoleColor.Gray)
+    {
+        Console.SetCursorPosition(x, y);
+        Console.ForegroundColor = color;
+        Console.Write(c);
+    } // set the elements of the project
+
+    static void PrintStringOnPosition(int x, int y, string str, ConsoleColor color = ConsoleColor.Gray)
+    {
+        Console.SetCursorPosition(x, y);
+        Console.ForegroundColor = color;
+        Console.Write(str);
+    }// set the elements of the project
+
+    static void ReadFile(string fileName)
+    {
+        string content = File.ReadAllText(fileName);
+        Console.WriteLine(content);
+    } // reads an external text files - there are two files: scoreboard and help
+
+    static void StartGame(int playfieldHeight, int playfieldWidth)
+    {
+        ConsoleInitialSettings();
+        PrintStringOnPosition(Console.WindowWidth / 2 - 7,
+            Console.WindowHeight / 2 - 8, "Falling Rocks", ConsoleColor.Yellow);
+        PrintStringOnPosition(Console.WindowWidth / 2 - 3,
+            Console.WindowHeight / 2 - 5, "Menu");
+        PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+            Console.WindowHeight / 2 - 3, "New game - press key Entr");
+        PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+            Console.WindowHeight / 2 - 1, "Help - press key H");
+        PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+            Console.WindowHeight / 2 + 1, "Exit - press key Escp");
+        bool commandCorrect = false;
+        while (!commandCorrect)
+        {
+            ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+            while (Console.KeyAvailable) Console.ReadKey(true);
+            if (pressedKey.Key == ConsoleKey.Enter)
+            {
+                Console.Beep();
+                Console.Clear();
+                DrawInfo(score, livesCount, playfieldHeight, playfieldWidth);
+                commandCorrect = true;
+            }
+            else if (pressedKey.Key == ConsoleKey.H)
+            {
+                Console.Beep();
+                Console.Clear();
+                string fileName = @"..\..\help.txt";
+                ReadFile(fileName);
+                PrintStringOnPosition(Console.WindowWidth / 2 - 14,
+                    Console.WindowHeight / 2 + 2, "Press key Escape to return!");
+                while (!commandCorrect)
+                {
+                    ConsoleKeyInfo keyPressed = Console.ReadKey(true);
+                    while (Console.KeyAvailable) Console.ReadKey(true);
+                    if (keyPressed.Key == ConsoleKey.Escape)
+                    {
+                        Console.Beep();
+                        Console.Clear();
+                        StartGame(playfieldHeight, playfieldWidth);
+                        commandCorrect = true;
+                    }
+                    else
+                    {
+                        PrintStringOnPosition(Console.WindowWidth / 2 - 14,
+                            Console.WindowHeight / 2 + 6, "Invalid key! Try again!");
+                    }
+                }
+            }
+            else if (pressedKey.Key == ConsoleKey.Escape)
+            {
+                Console.Beep();
+                Console.WriteLine();
+                Environment.Exit(0);
+                commandCorrect = true;
+            }
+            else
+            {
+                PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+                    Console.WindowHeight / 2 + 3, "Invalid key! Try again!");
+            }
+        }
+    } // draw initial menu, press key to provide help, exit or starts the game
+
+    static void DrawInfo(int score, int livesCount, int playfieldHeight, int playfieldWidth)
+    {
+        ConsoleInitialSettings();
+        for (int i = 0; i < Console.WindowHeight; i++)
+        {
+            PrintStringOnPosition(playfieldWidth, i, "|");
+        }
+        PrintStringOnPosition(30, 1, "Falling Rocks", ConsoleColor.Yellow);
+        PrintStringOnPosition(30, 7, "Lives:" + livesCount, ConsoleColor.Blue);
+        PrintStringOnPosition(30, 9, "Score:" + score, ConsoleColor.Yellow);
+        PrintStringOnPosition(30, 11, "Collectedd:" + collectTargert, ConsoleColor.Magenta);
+        PrintStringOnPosition(25, 3, "" + DateTime.Now, ConsoleColor.White);
+        PrintStringOnPosition(30, 13, "Speed:" + speed, ConsoleColor.White);
+    } // draws the information for the menu of the game
+
+    static void WriteScore(int score, string name)
+    {
+        StreamReader reader = new StreamReader(@"..\..\scores.txt");
+        List<string> list = new List<string>();
+        using (reader)
+        {
+            while (!reader.EndOfStream)
+            {
+                string line = reader.ReadLine();
+                list.Add(line);
+            }
+        }
+        string scorePlusName = score + "  " + name;
+        if (score.ToString().Length == 3)
+        {
+            scorePlusName = "  " + scorePlusName;
+        }
+        if (score.ToString().Length == 2)
+        {
+            scorePlusName = "   " + scorePlusName;
+        }
+        if (score.ToString().Length == 1)
+        {
+            scorePlusName = "    " + scorePlusName;
+        }
+        list.Add(scorePlusName);
+        list.Sort();
+        list.Reverse();
+        StreamWriter writer = new StreamWriter(@"..\..\scores.txt");
+        using (writer)
+        {
+            if (list.Count <= 10)
+            {
+                for (int i = 0; i < list.Count; i++)
+                {
+                    writer.WriteLine(list[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    writer.WriteLine(list[i]);
+                }
+            }
+        }
+    } // reads the existing file with scores and writes the ten best scores
+
+    static void GameOver()
+    {
+        Console.Clear();
+        PrintStringOnPosition(Console.WindowWidth / 2 - 5,
+            Console.WindowHeight / 2 - 8, "Game Over");
+        PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+            Console.WindowHeight / 2 - 5, "Your scores are " + score);
+        PrintStringOnPosition(Console.WindowWidth / 2 - 12,
+            Console.WindowHeight / 2 - 3, "Enter your name: ");
+        Console.SetCursorPosition(Console.WindowWidth / 2 + 5,
+            Console.WindowHeight / 2 - 3);
+        string name = Console.ReadLine().ToLower();
+        WriteScore(score, name);
+        Console.Clear();
+        PrintStringOnPosition(Console.WindowWidth / 2 - 6,
+            Console.WindowHeight / 2 - 10, "High scores\n");
+        PrintStringOnPosition(0, Console.WindowHeight / 2 - 8, "Points Names\n");
+        string fileName = @"..\..\scores.txt";
+        ReadFile(fileName);
+        PrintStringOnPosition(Console.WindowWidth / 2 - 8,
+            Console.WindowHeight / 2 + 4, "Press key Escp");
+        PrintStringOnPosition(Console.WindowWidth / 2 - 8,
+            Console.WindowHeight / 2 + 5, "to exit the game");
+        bool commandCorrect = false;
+        while (!commandCorrect)
+        {
+            ConsoleKeyInfo keyPressed = Console.ReadKey(true);
+            while (Console.KeyAvailable) Console.ReadKey(true);
+            if (keyPressed.Key == ConsoleKey.Escape)
+            {
+                Console.WriteLine(); Environment.Exit(0); commandCorrect = true;
+            }
+            else
+            {
+                PrintStringOnPosition(Console.WindowWidth / 2 - 10,
+                    Console.WindowHeight / 2 + 7, "Invalid key!Try again!");
+            }
+        }
+    } // exit menu and call the scoreboard
+
+    static int livesCount = 5;
+    static int score = 0;
+    static int collectTargert = 0;
+    static int speed = 0;
+    static int aceleration = 1;
+
+    static void Main(string[] args)
+    {
+        int playfieldHeight = 10;
+        int playfieldWidth = 20;
+        ConsoleInitialSettings();// set playground settings     
+        Rock userShip = new Rock();
+        userShip.x = 5;
+        userShip.y = Console.WindowHeight - 1;
+        userShip.c = 'A';
+        userShip.color = ConsoleColor.White;// draw our ship
+        ConsoleColor[] selectedColors = { ConsoleColor.Magenta, ConsoleColor.Cyan, ConsoleColor.Blue, ConsoleColor.DarkYellow, ConsoleColor.DarkRed, ConsoleColor.Green, ConsoleColor.DarkGreen, ConsoleColor.Red, ConsoleColor.Yellow };// set a colors array
+        char[] symbolList = { '&', '%', '$', '#', '@', '!', '*', '№', '=', '?', '§' };
+        // set a symbol array
+        Random randomGenerator = new Random();
+        List<Rock> rocks = new List<Rock>();
+        StartGame(playfieldHeight, playfieldWidth);
+        while (true)
+        {
+            speed += aceleration;
+            if (speed > 500)
+            {
+                speed = 500;
+            }
+            bool hittingUs = false;
+            {
+                int chance = randomGenerator.Next(0, 100);
+                if (chance < 10)
+                {// make a chance to have a bonus with 10 to 100
+                    Rock bonusRock = new Rock();
+                    bonusRock.x = randomGenerator.Next(0, playfieldWidth);
+                    bonusRock.y = 0;
+                    bonusRock.c = 'B';
+                    bonusRock.color = ConsoleColor.Magenta;
+                    rocks.Add(bonusRock);// initialize a bonus symbol
+                }
+                else
+                {
+                    Rock newRock = new Rock();
+                    newRock.x = randomGenerator.Next(0, playfieldWidth);
+                    newRock.y = 0;
+                    newRock.color = selectedColors[randomGenerator.Next(2, 9)];
+                    newRock.c = symbolList[randomGenerator.Next(0, 11)];
+                    rocks.Add(newRock);// cast random colors to the rocks
+                }// cast symbolList to the rocks
+            }
+            if (Console.KeyAvailable)
+            {
+                ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+                while (Console.KeyAvailable) Console.ReadKey(true);
+                if (pressedKey.Key == ConsoleKey.LeftArrow)
+                {
+                    if (userShip.x - 1 >= 0)
+                    {
+                        userShip.x = userShip.x - 1;
+                    }
+                }// go Left
+                else if (pressedKey.Key == ConsoleKey.RightArrow)
+                {
+                    if (userShip.x + 1 < playfieldWidth)
+                    {
+                        userShip.x = userShip.x + 1;
+                    }
+                }// go right
+                else if (pressedKey.Key == ConsoleKey.UpArrow)
+                {
+                    if (userShip.y - 1 >= 0 && userShip.y - 1 >= Console.WindowHeight - playfieldHeight)
+                    {
+                        userShip.y = userShip.y - 1;
+                    }
+                } // go up - 10 steps max
+                else if (pressedKey.Key == ConsoleKey.DownArrow)
+                {
+                    if (userShip.y + 1 > playfieldHeight && userShip.y < Console.WindowHeight - 1)
+                    {
+                        userShip.y = userShip.y + 1;
+                    }
+                }
+            }// go down
+            // move our ship( key pressed)
+            List<Rock> newList = new List<Rock>();
+            for (int i = 0; i < rocks.Count; i++)// move Rocks 
+            {
+                Rock oldRock = rocks[i];
+                Rock newRock = new Rock();
+                newRock.x = oldRock.x;
+                newRock.y = oldRock.y + 1;
+                newRock.c = oldRock.c;
+                newRock.color = oldRock.color;// have some bonusses
+                if (newRock.c == 'B' && newRock.x == userShip.x && newRock.y == userShip.y)
+                {
+                    Console.Beep(333, 333);
+                    speed = -25;
+                    collectTargert++;
+                    score = score + 3;
+                    newRock.color = ConsoleColor.Black;
+                    if (speed < 0)
+                    {
+                        speed = 0;
+                    }
+                }
+                if (newRock.c != 'B' && newRock.x == userShip.x && newRock.y == userShip.y)
+                {// if somerocks is hitting us our live going down with 1
+                    Console.Beep();
+                    livesCount--;
+                    hittingUs = true;
+                    if (livesCount < 1)
+                    {
+                        Console.Beep(333, 1000);
+                        GameOver();
+                    }// when livesCount is 0, we call the Gameover() method
+                }
+                if (newRock.y < Console.WindowHeight - 1)
+                {
+                    newList.Add(newRock);
+                }
+            }
+            rocks = newList;
+            //chek if the rocks is hitting us
+            Console.Clear();// clear everything
+            PrintOnPosition(userShip.x, userShip.y, userShip.c, userShip.color);
+            foreach (Rock car in rocks)// print possition again
+            {
+                PrintOnPosition(car.x, car.y, car.c, car.color);
+            }
+            if (hittingUs)
+            {
+                rocks.Clear();
+                PrintOnPosition(userShip.x, userShip.y, 'A', ConsoleColor.Red);
+            }
+            DrawInfo(score, livesCount, playfieldHeight, playfieldWidth);
+            Thread.Sleep(150);
+        }
+    }
+}
