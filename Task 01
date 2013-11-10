@@ -1,0 +1,25 @@
+/* Task 1. Write a program that reads 3 integer numbers from the console and prints their sum.*/
+
+
+using System;
+class ReadAndSum3Integers
+{
+    static void Main()
+    {
+        Console.Title = "ReadAndSum3Integers";
+
+        Console.WriteLine("First Integer: ");
+        int first = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Second Integer: ");
+        int second = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Third Integer: ");
+        int third = int.Parse(Console.ReadLine());
+
+        Console.WriteLine(new string('-',14));
+        int sum = first + second + third;
+        Console.WriteLine("The Sum of the integers is : {0}", sum );
+    }
+}
+
