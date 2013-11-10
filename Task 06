@@ -1,0 +1,49 @@
+/*Task 6. Write a program that reads the coefficients a, b and c of a quadratic equation
+ * ax2+bx+c=0 and solves it (prints its real roots).*/
+
+
+using System;
+class PrintQuadraticEquation
+{
+    static void Main()
+    {
+        Console.Title = "PrintQuadraticEquation";
+
+        Console.WriteLine("Enter coefficient`s value for A,B and C:");
+        double aNum = double.Parse(Console.ReadLine());/* Quadratic equation is a second order of 
+                                                        * polynomial equation in a single variable. 
+                                                        x = [ -b +/- sqrt(b^2 - 4ac) ] / 2a
+                                                        We have to find the value of (b*b - 4*a*c). 
+                                                        * When it is greater than Zero, we will get two Real Solutions.
+                                                        * When it is equal to zero, we will get one Real Solution.
+                                                        * When it is less than Zero, we will get two Imaginary Solutions.*/
+        double bNum = double.Parse(Console.ReadLine());
+        double cNum = double.Parse(Console.ReadLine());
+
+        double sqrt = bNum * bNum - 4 * aNum * cNum;
+        double x, x1, x2, img;
+
+        if (sqrt > 0)
+        {
+            x1 = (-bNum + Math.Sqrt(sqrt)) / (2 * aNum);
+            x2 = (-bNum - Math.Sqrt(sqrt)) / (2 * aNum);
+            Console.WriteLine(new string('-',44));
+            Console.WriteLine("There are Two Real Solutions: {0} or {1}", x1, x2);
+        }
+        else if (sqrt < 0)
+        {
+            sqrt = -sqrt;
+            x = -bNum / (2 * aNum);
+            img = Math.Sqrt(sqrt) / (2 * aNum);
+            Console.WriteLine(new string('-', 44));
+            Console.WriteLine("There are Two Imaginary Solutions: {0} + {1} i or {2} + {3} i", x, img, x, img);
+        }
+        else
+        {
+            x = (-bNum + Math.Sqrt(sqrt)) / (2 * aNum);
+            Console.WriteLine(new string('-', 44));
+            Console.WriteLine("One Real Solution: {0}", x);
+        }
+    }
+}
+
